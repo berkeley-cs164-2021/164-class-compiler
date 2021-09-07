@@ -1,4 +1,4 @@
-The in-class compiler status after the "What is a Compiler?" lecture.  See lecture notes for much more detail.
+The in-class compiler status after the "S-Expressions" lecture.  See lecture notes for much more detail.
 
 To run:
 
