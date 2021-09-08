@@ -1,4 +1,4 @@
-The in-class compiler status after the "S-Expressions" lecture.  See lecture notes for much more detail.
+The in-class compiler status after the "Unary Operations" lecture.  See lecture notes for much more detail.
 
 To run:
 
@@ -8,4 +8,4 @@ Inside utop:
 
 `open Cs164.Compile;;`
 
-`compile_and_run "56";;`
+`compile_and_run "(add1 56)";;`
