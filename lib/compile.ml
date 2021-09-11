@@ -25,9 +25,15 @@ let compile_to_file (program: string): unit =
     output_string file (compile (parse program));
     close_out file
 
+let check_runtime (): unit =
+    if not( Sys.file_exists "runtime.o") then
+        raise (Failure "No compiled runtime found.\nDid you compile it? Try:\n> gcc -c runtime.c -o runtime.o")
+
 let compile_and_run (program: string): string =
     compile_to_file program;
-    ignore (Unix.system "nasm program.s -f macho64 -o program.o");
+    check_runtime();
+    let format = (if Asm.macos then "macho64" else "elf64") in
+    ignore (Unix.system ("nasm program.s -f " ^ format ^ " -o program.o"));
     ignore (Unix.system "gcc program.o runtime.o -o program");
     let inp = Unix.open_process_in "./program" in
     let r = input_line inp in
