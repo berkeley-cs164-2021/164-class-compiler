@@ -42,9 +42,6 @@ jobs:
           eval $(opam env)
           dune build
 
-      - name: Build Runtime
-        run: gcc -c runtime.c -o runtime.o
-
       - name: Simple Test
         run: |
           eval $(opam env)
