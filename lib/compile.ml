@@ -62,6 +62,15 @@ let compile_to_file (program : string) : unit =
   output_string file (compile (parse program)) ;
   close_out file
 
+let compile_and_run (program: string): string =
+    compile_to_file program;
+    let format = (if Asm.macos then "macho64" else "elf64") in
+    ignore (Unix.system ("nasm program.s -f " ^ format ^ " -o program.o"));
+    ignore (Unix.system "gcc program.o runtime.c -o program");
+    let inp = Unix.open_process_in "./program" in
+    let r = input_line inp in
+    close_in inp; r
+
 let difftest (examples : string list) =
   let results =
     List.map (fun ex -> (compile_and_run ex, Interp.interp ex)) examples
