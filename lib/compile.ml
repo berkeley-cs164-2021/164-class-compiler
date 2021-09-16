@@ -3,7 +3,6 @@ open Asm
 
 exception BadExpression of s_exp
 
-<<<<<<< HEAD
 let num_shift = 2
 let num_mask = 0b11
 let num_tag = 0b00
