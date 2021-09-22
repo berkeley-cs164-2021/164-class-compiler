@@ -15,15 +15,14 @@ void print_value(uint64_t value) {
   if ((value & num_mask) == num_tag) {
     int64_t ivalue = (int64_t)value;
     printf("%" PRIi64, ivalue >> num_shift);
-  } else if ((value & bool_mask) == bool_tag){
+  } else if ((value & bool_mask) == bool_tag) {
     if (value >> bool_shift) {
       printf("true");
-    }
-    else{
+    } else {
       printf("false");
     }
   } else {
-    printf("BAD VALUE %" PRIu64, value);
+    printf("BAD %" PRIu64, value);
   }
 }
 
