@@ -1,4 +1,4 @@
-The in-class compiler status after the "Binary Operations" lectures.  See lecture notes for much more detail.
+The in-class compiler status after the "Naming Expressions" lectures.  See lecture notes for much more detail.
 
 To run:
 
@@ -8,4 +8,4 @@ Inside utop:
 
 `open Cs164.Compile;;`
 
-`compile_and_run "(+ 1 (+ 2 3))";;`
+`compile_and_run "(let ((x 54)) (+ 1 x))";;`

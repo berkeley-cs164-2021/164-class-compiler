@@ -5,3 +5,10 @@ let gensym : string -> string =
     counter := !counter + 1 ;
     symbol
 
+module Symtab = Map.Make (struct
+  type t = string
+
+  let compare = compare
+end)
+
+type 'a symtab = 'a Symtab.t
