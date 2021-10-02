@@ -1,4 +1,4 @@
-The in-class compiler status after class sessions about pairs and the heap.  See lecture notes for much more detail.
+The in-class compiler status after class session about handling errors.  See lecture notes for much more detail.
 
 To run:
 
@@ -8,4 +8,4 @@ Inside utop:
 
 `open Cs164.Compile;;`
 
-`compile_and_run "(left (pair 1 2))";;`
+`compile_and_run "(add1 false)";;`
