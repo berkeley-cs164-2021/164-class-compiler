@@ -47,6 +47,9 @@ let ensure_pair (op : operand) : directive list =
 
 let stack_address (stack_index : int) = MemOffset (Reg Rsp, Imm stack_index)
 
+let align_stack_index (stack_index:int) :int =
+  if stack_index mod 16 = -8 then stack_index else stack_index - 8
+
 (*
 The role of compile_exp is to generate a list of assembly instructions
 that will evauate expression exp and put the resultant value into
@@ -55,6 +58,13 @@ register rax
 let rec compile_exp (tab : int symtab) (stack_index : int) (exp : s_exp) :
     directive list =
   match exp with
+  | Lst [Sym "read-num"] ->
+    [ Mov (stack_address stack_index, Reg Rdi)
+    ; Add (Reg Rsp, Imm (align_stack_index stack_index))
+    ; Call "read_num"
+    ; Sub (Reg Rsp, Imm (align_stack_index stack_index))
+    ; Mov (Reg Rdi, stack_address stack_index)
+    ]
   | Sym var when Symtab.mem var tab ->
       [Mov (Reg Rax, stack_address (Symtab.find var tab))]
   | Lst [Sym "let"; Lst [Lst [Sym var; e]]; body] ->
@@ -153,7 +163,7 @@ let rec compile_exp (tab : int symtab) (stack_index : int) (exp : s_exp) :
       raise (BadExpression e)
 
 let compile (program : s_exp) : string =
-  [Global "entry"; Extern "error"; Label "entry"] @ compile_exp Symtab.empty (-8) program @ [Ret]
+  [Global "entry"; Extern "error"; Extern "read_num"; Label "entry"] @ compile_exp Symtab.empty (-8) program @ [Ret]
   |> List.map string_of_directive
   |> String.concat "\n"
 

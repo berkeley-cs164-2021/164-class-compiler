@@ -22,8 +22,12 @@ let rec interp_exp env (exp : s_exp) : value =
       Boolean true
   | Sym "false" ->
       Boolean false
+  | Lst [Sym "read-num"] ->
+    Number (input_line stdin |> int_of_string)
   | Lst [Sym "pair"; e1; e2] ->
-    Pair (interp_exp env e1, interp_exp env e2)
+    let l = interp_exp env e1 in 
+    let r = interp_exp env e2 in
+    Pair (l,r)
   | Lst [Sym "left"; e1] -> (
       match interp_exp env e1 with
       | Pair (v, _) -> v
