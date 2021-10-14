@@ -1,4 +1,4 @@
-The in-class compiler status after class session about output.  See lecture notes for much more detail.
+The in-class compiler status after class sessions about functions.  See lecture notes for more detail.
 
 To run:
 
@@ -8,4 +8,5 @@ Inside utop:
 
 `open Cs164.Compile;;`
 
-`compile_and_run_io "(do (print (pair (read-num) (read-num))) (newline) (print 5))" "3\n4";;`
+`compile_and_run "(define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
+(print (fib (read-num)))";;`
