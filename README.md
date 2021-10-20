@@ -1,4 +1,4 @@
-The in-class compiler status after class sessions about tail call optimization.  See lecture notes for more detail.
+The in-class compiler status after class session about parsing S-expressions.  See lecture notes for more detail.
 
 To run:
 
@@ -6,10 +6,6 @@ To run:
 
 Inside utop:
 
-`open Cs164.Compile;;`
+`open Cs164.Handparser;;`
 
-`compile_and_run "(define (sum n total)
-  (if (zero? n)
-    total
-    (sum (sub1 n) (+ n total))))
-(print (sum 1000000 0))";;`
+`parse "( + ( + 2 3 ) 1 )";;`
