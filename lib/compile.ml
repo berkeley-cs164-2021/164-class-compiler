@@ -118,9 +118,11 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
       ; Mov (Reg Rdi, stack_address stack_index)
       ; Mov (Reg Rax, operand_of_bool true) ]
   | Lst (Sym "do" :: exps) when List.length exps > 0 ->
-      List.concat_map
-        (fun exp -> compile_exp defns tab stack_index exp false)
-        exps
+      List.mapi (fun i exp ->
+        compile_exp defns tab stack_index exp
+	        (if i = List.length exps - 1 then is_tail else false))
+	    exps
+      |> List.concat
   | Lst [Sym "pair"; e1; e2] ->
       compile_exp defns tab stack_index e1 false
       @ [Mov (stack_address stack_index, Reg Rax)]
