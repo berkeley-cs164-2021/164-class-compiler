@@ -1,4 +1,4 @@
-The in-class compiler status after class session about parsing S-expressions.  See lecture notes for more detail.
+The in-class compiler status after class session about parsing.  See lecture notes for more detail.
 
 To run:
 
@@ -6,6 +6,6 @@ To run:
 
 Inside utop:
 
-`open Cs164.Handparser;;`
+`open Cs164.Handparser2;;`
 
-`parse "( + ( + 2 3 ) 1 )";;`
+`parse "2 + 3 * 10";;`
