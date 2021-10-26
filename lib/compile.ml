@@ -183,28 +183,36 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
       @ [Label continue_label]
   | Lst [Sym "+"; e1; e2] ->
       compile_exp defns tab stack_index e1 false
+      @ ensure_num (Reg Rax)
       @ [Mov (stack_address stack_index, Reg Rax)]
       @ compile_exp defns tab (stack_index - 8) e2 false
+      @ ensure_num (Reg Rax)
       @ [Mov (Reg R8, stack_address stack_index)]
       @ [Add (Reg Rax, Reg R8)]
   | Lst [Sym "-"; e1; e2] ->
       compile_exp defns tab stack_index e1 false
+      @ ensure_num (Reg Rax)
       @ [Mov (stack_address stack_index, Reg Rax)]
       @ compile_exp defns tab (stack_index - 8) e2 false
+      @ ensure_num (Reg Rax)
       @ [Mov (Reg R8, Reg Rax)]
       @ [Mov (Reg Rax, stack_address stack_index)]
       @ [Sub (Reg Rax, Reg R8)]
   | Lst [Sym "="; e1; e2] ->
       compile_exp defns tab stack_index e1 false
+      @ ensure_num (Reg Rax)
       @ [Mov (stack_address stack_index, Reg Rax)]
       @ compile_exp defns tab (stack_index - 8) e2 false
+      @ ensure_num (Reg Rax)
       @ [Mov (Reg R8, stack_address stack_index)]
       @ [Cmp (Reg Rax, Reg R8)]
       @ zf_to_bool
   | Lst [Sym "<"; e1; e2] ->
       compile_exp defns tab stack_index e1 false
+      @ ensure_num (Reg Rax)
       @ [Mov (stack_address stack_index, Reg Rax)]
       @ compile_exp defns tab (stack_index - 8) e2 false
+      @ ensure_num (Reg Rax)
       @ [Mov (Reg R8, stack_address stack_index)]
       @ [Cmp (Reg R8, Reg Rax)]
       @ lf_to_bool
