@@ -39,6 +39,12 @@ let ensure_num (op: operand) : directive list =
     Cmp (Reg R8, Imm num_tag);
     Jnz "error"]
 
+let ensure_bool (op: operand) : directive list =
+  [ Mov (Reg R8, op);
+    And (Reg R8, Imm bool_mask);
+    Cmp (Reg R8, Imm bool_tag);
+    Jnz "error"]
+
 let ensure_pair (op : operand) : directive list =
   [ Mov (Reg R8, op)
   ; And (Reg R8, Imm heap_mask)
@@ -177,6 +183,7 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
       let else_label = Util.gensym "else" in
       let continue_label = Util.gensym "continue" in
       compile_exp defns tab stack_index test_exp false
+      @ ensure_bool (Reg Rax)
       @ [Cmp (Reg Rax, operand_of_bool false); Jz else_label]
       @ compile_exp defns tab stack_index then_exp is_tail
       @ [Jmp continue_label] @ [Label else_label]
