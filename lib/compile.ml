@@ -171,6 +171,7 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
       @ [Add (Reg Rax, operand_of_num 1)]
   | Lst [Sym "sub1"; arg] ->
       compile_exp defns tab stack_index arg false
+      @ ensure_num (Reg Rax)
       @ [Sub (Reg Rax, operand_of_num 1)]
   | Lst [Sym "if"; test_exp; then_exp; else_exp] ->
       let else_label = Util.gensym "else" in
