@@ -19,6 +19,8 @@ let heap_mask = 0b111
 
 let pair_tag = 0b010
 
+let fn_tag = 0b110
+
 let operand_of_bool (b : bool) : operand =
   Imm (((if b then 1 else 0) lsl bool_shift) lor bool_tag)
 
@@ -44,15 +46,19 @@ let ensure_num (op : operand) : directive list =
   ; Cmp (Reg R8, Imm num_tag)
   ; Jnz "error" ]
 
+let ensure_fn (op : operand) : directive list =
+  [ Mov (Reg R8, op)
+  ; And (Reg R8, Imm heap_mask)
+  ; Cmp (Reg R8, Imm fn_tag)
+  ; Jnz "error" ]
+
 let align_stack_index (stack_index : int) : int =
   if stack_index mod 16 = -8 then stack_index else stack_index - 8
 
 let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
     (exp : expr) (is_tail : bool) : directive list =
   match exp with
-  | Call (f, args) when is_defn defns f && not is_tail ->
-      let defn = get_defn defns f in
-      if List.length args = List.length defn.args then
+  | Call (f, args) when not is_tail ->
         let stack_base = align_stack_index (stack_index + 8) in
         let compiled_args =
           args
@@ -62,13 +68,13 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
           |> List.concat
         in
         compiled_args
+        @ compile_exp defns tab (stack_base - (8* (List.length args + 2))) f false
+        @ ensure_fn (Reg Rax)
+        @ [Sub (Reg Rax, Imm fn_tag)]
         @ [ Add (Reg Rsp, Imm stack_base)
-          ; Call (defn_label f)
+          ; ComputedCall (Reg Rax)
           ; Sub (Reg Rsp, Imm stack_base) ]
-      else raise (BadExpression exp)
-  | Call (f, args) when is_defn defns f && is_tail ->
-      let defn = get_defn defns f in
-      if List.length args = List.length defn.args then
+  | Call (f, args) when is_tail ->
         let compiled_args =
           args
           |> List.mapi (fun i arg ->
@@ -83,8 +89,13 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
                  ; Mov (stack_address ((i + 1) * -8), Reg R8) ])
           |> List.concat
         in
-        compiled_args @ moved_args @ [Jmp (defn_label f)]
-      else raise (BadExpression exp)
+        compiled_args
+        @ compile_exp defns tab (stack_index - (8* (List.length args))) f false
+        @ ensure_fn (Reg Rax)
+        @ [Sub (Reg Rax, Imm fn_tag)]
+        @
+        moved_args @ 
+        [ComputedJmp (Reg Rax)]
   | Call _ ->
       raise (BadExpression exp)
   | Prim0 ReadNum ->
@@ -133,6 +144,11 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
       @ [Mov (Reg Rax, MemOffset (Reg Rax, Imm (-pair_tag + 8)))]
   | Var var when Symtab.mem var tab ->
       [Mov (Reg Rax, stack_address (Symtab.find var tab))]
+  | Var var when is_defn defns var ->
+      [
+        LeaLabel (Reg Rax, defn_label var)
+        ; Or (Reg Rax, Imm fn_tag)
+      ]
   | Var _ ->
       raise (BadExpression exp)
   | Let (var, e, body) ->
@@ -207,7 +223,7 @@ let compile_defn defns defn =
   let ftab =
     defn.args |> List.mapi (fun i arg -> (arg, -8 * (i + 1))) |> Symtab.of_list
   in
-  [Label (defn_label defn.name)]
+  [Align 8; Label (defn_label defn.name)]
   @ compile_exp defns ftab (-8 * (List.length defn.args + 1)) defn.body true
   @ [Ret]
 
