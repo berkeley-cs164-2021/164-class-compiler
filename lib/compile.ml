@@ -151,6 +151,8 @@ let rec compile_exp (defns : defn list) (tab : int symtab) (stack_index : int)
       ]
   | Var _ ->
       raise (BadExpression exp)
+  | Closure _ ->
+      raise (BadExpression exp)
   | Let (var, e, body) ->
       compile_exp defns tab stack_index e false
       @ [Mov (stack_address stack_index, Reg Rax)]

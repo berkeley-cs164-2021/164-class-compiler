@@ -6,7 +6,14 @@ To run:
 
 Inside utop:
 
-`open Cs164.Compile;;`
+`open Cs164.Interp;;`
 
-`compile_and_run "(define (f g) (g 2))
-(do (print (f (lambda (x) (+ x x)))) (newline))";;`
+`compile_and_run "(define (call-with-two func-arg) (func-arg 2))
+(do 
+    (let 
+        ((y 3)) 
+        (print 
+            (call-with-two (lambda (x) (+ x y)))
+        )
+    ) 
+    (newline))";;`
