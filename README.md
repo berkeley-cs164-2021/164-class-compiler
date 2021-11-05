@@ -1,4 +1,4 @@
-The in-class compiler status after our first class session about first-class functions.  See lecture notes for more detail.
+The in-class compiler status after our second class session about first-class functions, the one that adds lambdas via desugaring.  See lecture notes for more detail.
 
 To run:
 
@@ -9,5 +9,4 @@ Inside utop:
 `open Cs164.Compile;;`
 
 `compile_and_run "(define (f g) (g 2))
-(define (mul2 x) (+ x x))
-(print (f mul2))";;`
+(do (print (f (lambda (x) (+ x x)))) (newline))";;`
