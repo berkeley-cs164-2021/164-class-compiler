@@ -289,6 +289,7 @@ let compile_defn defns defn =
 
 let compile (program : s_exp list) : string =
   let prog = program_of_s_exps program in
+  let prog = Constant_folding.fold_program prog in
   [ Global "entry"
   ; Extern "error"
   ; Extern "read_num"
