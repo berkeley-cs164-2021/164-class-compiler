@@ -152,7 +152,8 @@ let rec expr_of_expr_lam (defns : defn list ref) : expr_lam -> expr = function
       Call (expr_of_expr_lam defns exp, List.map (expr_of_expr_lam defns) args)
   | Lambda (args, body) ->
       let name = gensym "_lambda" in
-      defns := {name; args; body= expr_of_expr_lam defns body} :: !defns ;
+      let body = expr_of_expr_lam defns body in
+      defns := {name; args; body} :: !defns ;
       Closure name
 
 let program_of_s_exps (exps : s_exp list) : program =
